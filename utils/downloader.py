@@ -120,6 +120,11 @@ def _build_ydl_opts(download_dir: str, platform: str, quality: str = "1080") -> 
         "merge_output_format": "mp4",
         "quiet": True,
         "no_warnings": True,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android", "ios", "mweb"]
+            }
+        },
     }
     if cookies_file:
         opts["cookiefile"] = cookies_file
