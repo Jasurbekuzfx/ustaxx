@@ -103,14 +103,26 @@ async def extract_audio_from_video(video_path: str, audio_path: str) -> bool:
         return False
 
 
+def _is_valid_cookie_file(file_path: str) -> bool:
+    if not file_path or not os.path.exists(file_path):
+        return False
+    try:
+        if os.path.getsize(file_path) < 30:
+            return False
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            lines = [l.strip() for l in f if l.strip() and not l.strip().startswith("#")]
+            return len(lines) > 0
+    except Exception:
+        return False
+
+
 def _get_cookies_file(platform: str = None):
     tmp_cookies = "/tmp/youtube_cookies.txt"
-    if os.path.exists(tmp_cookies):
+    if _is_valid_cookie_file(tmp_cookies):
         return tmp_cookies
-    if platform == INSTAGRAM and config.IG_COOKIES_PATH and os.path.exists(config.IG_COOKIES_PATH):
+    if platform == INSTAGRAM and config.IG_COOKIES_PATH and _is_valid_cookie_file(config.IG_COOKIES_PATH):
         return config.IG_COOKIES_PATH
     return None
-
 
 
 def _build_ydl_opts(download_dir: str, platform: str, quality: str = "1080") -> dict:
@@ -122,7 +134,7 @@ def _build_ydl_opts(download_dir: str, platform: str, quality: str = "1080") -> 
         "no_warnings": True,
         "extractor_args": {
             "youtube": {
-                "player_client": ["android", "ios", "mweb"]
+                "player_client": ["ios", "android", "mweb"]
             }
         },
     }
