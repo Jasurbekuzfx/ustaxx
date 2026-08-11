@@ -20,6 +20,7 @@ def search_youtube_flat(query: str, limit: int = 10) -> list:
     ydl_opts = {
         'extract_flat': True, 'skip_download': True,
         'quiet': True, 'no_warnings': True,
+        'extractor_args': {'youtube': {'player_client': ['android', 'ios', 'mweb']}},
     }
     cookies_file = _get_cookies_file()
     if cookies_file:
@@ -62,6 +63,7 @@ def download_yt_audio_sync(video_id: str) -> tuple:
         'outtmpl': os.path.join(download_dir, "%(title).50s.%(ext)s"),
         'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}],
         'quiet': True, 'no_warnings': True,
+        'extractor_args': {'youtube': {'player_client': ['android', 'ios', 'mweb']}},
     }
     cookies_file = _get_cookies_file()
     if cookies_file:
