@@ -8,9 +8,22 @@ import config
 SEARCH_CACHE = {}
 
 
+def _is_valid_cookie_file(file_path: str) -> bool:
+    if not file_path or not os.path.exists(file_path):
+        return False
+    try:
+        if os.path.getsize(file_path) < 30:
+            return False
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            lines = [l.strip() for l in f if l.strip() and not l.strip().startswith("#")]
+            return len(lines) > 0
+    except Exception:
+        return False
+
+
 def _get_cookies_file():
     tmp_cookies = "/tmp/youtube_cookies.txt"
-    if os.path.exists(tmp_cookies):
+    if _is_valid_cookie_file(tmp_cookies):
         return tmp_cookies
     return None
 
@@ -20,13 +33,13 @@ def search_youtube_flat(query: str, limit: int = 10) -> list:
     ydl_opts = {
         'extract_flat': True, 'skip_download': True,
         'quiet': True, 'no_warnings': True,
-        'extractor_args': {'youtube': {'player_client': ['android', 'ios', 'mweb']}},
+        'extractor_args': {'youtube': {'player_client': ['ios', 'android', 'mweb']}},
     }
     cookies_file = _get_cookies_file()
     if cookies_file:
         ydl_opts["cookiefile"] = cookies_file
 
-    cookie_param_str = ydl_opts.get("cookiefile", "None (Fayl topilmadi)")
+    cookie_param_str = ydl_opts.get("cookiefile", "None (Fayl yaroqsiz yoki topilmadi)")
     print(f"🍪 [music_search.py - search] yt-dlp cookiefile: {cookie_param_str}")
     logging.info(f"🍪 [music_search.py - search] yt-dlp cookiefile: {cookie_param_str}")
 
@@ -63,13 +76,13 @@ def download_yt_audio_sync(video_id: str) -> tuple:
         'outtmpl': os.path.join(download_dir, "%(title).50s.%(ext)s"),
         'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}],
         'quiet': True, 'no_warnings': True,
-        'extractor_args': {'youtube': {'player_client': ['android', 'ios', 'mweb']}},
+        'extractor_args': {'youtube': {'player_client': ['ios', 'android', 'mweb']}},
     }
     cookies_file = _get_cookies_file()
     if cookies_file:
         ydl_opts["cookiefile"] = cookies_file
 
-    cookie_param_str = ydl_opts.get("cookiefile", "None (Fayl topilmadi)")
+    cookie_param_str = ydl_opts.get("cookiefile", "None (Fayl yaroqsiz yoki topilmadi)")
     print(f"🍪 [music_search.py - download] yt-dlp cookiefile: {cookie_param_str}")
     logging.info(f"🍪 [music_search.py - download] yt-dlp cookiefile: {cookie_param_str}")
 
